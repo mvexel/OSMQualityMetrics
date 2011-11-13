@@ -13,8 +13,11 @@ instructions at https://github.com/joto/osmium/tree/master/osmjs
 Running the script
 ==================
 With OSMJS compiled, run the script:
+
         /path/to/osmjs -j OSMQualityMetrics.js -l array /path/to/data.osm
+
 The script will generate a number of output files:
+
 - ways.* : A shapefile containing all way geometries with version and
 timestamp attributes. 
 - metrostats.csv : The data metrics. 
