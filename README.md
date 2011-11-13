@@ -16,6 +16,17 @@ With OSMJS compiled, run the script:
 
         /path/to/osmjs -j OSMQualityMetrics.js -l array /path/to/data.osm
 
+The output on screen will look something like this:
+
+        Running...
+        parsing nodes...
+        parsing ways...
+        parsing relations...
+        output and cleanup...
+        total nodes / ways / relations: 418356 / 58727 / 358
+        finished -- took 15922 ms: nodes / ways / relations / other : 9007 / 6877 / 15 / 23
+
+
 The script will generate a number of output files:
 
 - ways.* : A shapefile containing all way geometries with version and
