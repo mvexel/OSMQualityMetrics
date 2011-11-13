@@ -26,7 +26,7 @@ timestamp attributes.
 Notes
 =====
 - if you don't need the ways shapefile, you can set the OUTPUT_WAYS
-variable to false in the script. You can also leave out the -l 
+variable to false in the script. You can then also leave out the -l 
 parameter when running the script and speed things up. 
 - The -l array script is best for large OSM files. If you're working
 with smaller, city-sized OSM data files. run OSMJS with the -h option 
