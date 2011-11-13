@@ -45,4 +45,4 @@ process.
 Extras
 ======
 The generated ways shapefiles will include version and timestamp attributes. You can use those to create interesting visualizations, like the ones shown in Martijn van Exel's [talk](http://www.slideshare.net/mvexel/insert-coin-to-play) at State Of The Map 2011. The Quantum GIS style file used to generate these images is included in the `qgis` folder.  
-
+!(https://github.com/mvexel/OSMQualityMetrics/blob/master/qgis/styled-ways-example.png?raw=true)
