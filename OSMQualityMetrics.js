@@ -179,7 +179,6 @@ Osmium.Callbacks.way = function() {
 		tiger=(key.match(/tiger/ig))
 		if(key.match(/tiger:cfcc/ig)) {
 		    tigerbreakdown[this.tags[key]] = isNaN(tigerbreakdown[this.tags[key]]) ? 1 : tigerbreakdown[this.tags[key]] + 1;
-		    print('tiger ' + this.tags[key] + ' is now ' + tigerbreakdown[this.tags[key]]);
 		}
 	}
 	if(tiger) {
