@@ -55,6 +55,7 @@ Easy
 * More attributes in ways output
 * More specific stylings
 * More specific statistics on relations
+
 Harder
 ------
 * Work with full history files
