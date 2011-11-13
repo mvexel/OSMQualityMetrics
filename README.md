@@ -33,3 +33,16 @@ with smaller, city-sized OSM data files. run OSMJS with the -h option
 for more info. 
 - The script will save its output files in the current working
 directory.
+
+Timings
+=======
+On a Intel® Core™ i5-2410M CPU @ 2.30GHzx4 machine with 8GB of RAM
+running Ubuntu Oneiric, a 55MB bz2-compressed OSM XML file takes 103
+seconds to process without way shapefile output. With way shapefile 
+output using the sparsetable storage, the same file took 133 seconds to
+process.  
+
+Extras
+======
+The generated ways shapefiles will include version and timestamp attributes. You can use those to create interesting visualizations, like the ones shown in Martijn van Exel's [talk](http://www.slideshare.net/mvexel/insert-coin-to-play) at State Of The Map 2011. The Quantum GIS style file used to generate these images is included in the `qgis` folder.  
+
