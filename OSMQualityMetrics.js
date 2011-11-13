@@ -38,8 +38,9 @@
  * CONFIGURATION
 */
 
-// This controls the output of way geometries.
-var OUTPUT_WAYS = false;
+// This controls the output of way geometries. If you set this to true,
+// don't forget you will need to set the -l parameter when running.
+var OUTPUT_WAYS = true;
 
 // These are the thresholds for the age distribution
 // Defaults are 30 days, 90 days, 180 days, 365 days, 730 days
@@ -57,6 +58,7 @@ var namekeys = {name:1,ref:1,place:1,addr:1}
  */
 
 // GLOBALS
+var shp;
 var users = [];
 var nodes = {};
 var ages = [];
@@ -71,38 +73,38 @@ var t0,t1,tnodes0,tnodes1,tnodes,tways0,tways1,tways,trelations0,trelations1,tre
 var day = 60*60*24;
 
 function User(uid,name) {
-	this.uid=uid;
-	this.name=name;
-	this.nodes=0;
-	this.ways=0;
-	this.relations=0;
+    this.uid=uid;
+    this.name=name;
+    this.nodes=0;
+    this.ways=0;
+    this.relations=0;
 }
 
 User.prototype.rank = function(){return this.nodes*ranking.nodes + this.ways*ranking.ways+ this.relations*ranking.relations};
 
 function calculate_percentiles(ary) {
-	var cohorts = [0,0,0,0,0,0];
-	var now = Math.round(new Date().getTime()/1000);
-	for(var i=0;i<ary.length;i+=1) {
-	    var t = ary[i];
-		var cohorted = false;
-	    for(var j=thresholds.length-1;j>=0;j-=1) {
-			if(t<(now-thresholds[j])) {
-				cohorts[j+1]+=1;
-				cohorted = true;
-				break;
-			} 
-		}
-		if(!cohorted) cohorts[0]+=1;
-	}
-	for(var j=cohorts.length-1;j>=0;j-=1) {
-		cohorts[j] = ((cohorts[j] / ary.length) * 100).toFixed(1);
-	}
-	return cohorts;
+    var cohorts = [0,0,0,0,0,0];
+    var now = Math.round(new Date().getTime()/1000);
+    for(var i=0;i<ary.length;i+=1) {
+        var t = ary[i];
+        var cohorted = false;
+        for(var j=thresholds.length-1;j>=0;j-=1) {
+            if(t<(now-thresholds[j])) {
+                cohorts[j+1]+=1;
+                cohorted = true;
+                break;
+            } 
+        }
+        if(!cohorted) cohorts[0]+=1;
+    }
+    for(var j=cohorts.length-1;j>=0;j-=1) {
+        cohorts[j] = ((cohorts[j] / ary.length) * 100).toFixed(1);
+    }
+    return cohorts;
 }
 
 function sort_by_rank(a,b) {
-	return ((a.rank() < b.rank()) ? 1 : (a.rank() > b.rank()) ? -1 : 0);
+    return ((a.rank() < b.rank()) ? 1 : (a.rank() > b.rank()) ? -1 : 0);
 }
 
 function sort_by_totals(a,b) {
@@ -114,108 +116,117 @@ Osmium.Callbacks.init = function() {
     print('Running...');
     t0 = new Date();
     if(OUTPUT_WAYS) {
-	var shp = Osmium.Output.Shapefile.open('ways', 'line');
-	shp.add_field('id', 'integer', 10);
-	shp.add_field('name', 'string', 40);
-	shp.add_field('version','integer',5);
-	shp.add_field('timestamp','integer', 16);
+        shp = Osmium.Output.Shapefile.open('ways', 'line');
+        shp.add_field('id', 'integer', 10);
+        shp.add_field('name', 'string', 40);
+        shp.add_field('version','integer',5);
+        shp.add_field('timestamp','integer', 16);
     }
 }
 
 Osmium.Callbacks.node = function() {
-	if (!doingnodes) {
-		doingnodes = true;
-		tnodes0 = new Date();
-	}
+    if (!doingnodes) {
+        // The before_* callbacks are not called, so we need a workaround.
+        doingnodes = true;
+        tnodes0 = new Date();
+        print('parsing nodes...');
+    }
 
-	if(!users[this.uid]) {
-		users[this.uid] = new User(this.uid,this.user);
-		usercnt += 1;
-	}
-	users[this.uid].nodes+=1;
-	for(var key in this.tags) {
-		nodetags+=1;
-		if (key in poikeys) poicnt += 1;  
-		if (key in transportkeys) transportcnt += 1;
-		if (key in namekeys) namecnt += 1;
-	}
-	nodecnt+=1;
-	nodes[this.id] = 0;
-	avgage = avgage + (Math.round(new Date(this.timestamp).getTime()/1000) - avgage) / nodecnt;
-	ages.push(Math.round(new Date(this.timestamp).getTime()/1000));
-	avgnodeversion = avgnodeversion + (this.version - avgnodeversion) / nodecnt;
-	
+    if(!users[this.uid]) {
+        users[this.uid] = new User(this.uid,this.user);
+        usercnt += 1;
+    }
+    users[this.uid].nodes+=1;
+    for(var key in this.tags) {
+        nodetags+=1;
+        if (key in poikeys) poicnt += 1;  
+        if (key in transportkeys) transportcnt += 1;
+        if (key in namekeys) namecnt += 1;
+    }
+    nodecnt+=1;
+    nodes[this.id] = 0;
+    avgage = avgage + (Math.round(new Date(this.timestamp).getTime()/1000) - avgage) / nodecnt;
+    ages.push(Math.round(new Date(this.timestamp).getTime()/1000));
+    avgnodeversion = avgnodeversion + (this.version - avgnodeversion) / nodecnt;
+    
 }
 
 Osmium.Callbacks.way = function() {
-	/* todo:
-	 * average length of road segments
-	 * shapes for certain tiger features
-	 * turn restrictions
-	 */
-	 
-	if(OUTPUT_WAYS) {
-	    shp.add(this.geom, { id: this.id, name: this.tags.name, version: this.version, timestamp: Math.round(new Date(this.timestamp).getTime()/1000) });
-	}
-	
-	if (doingnodes) {
-		doingnodes = false;
-		doingways = true;
-		tnodes1 = new Date();
-	}
-	var tiger = false;
-	if(!users[this.uid]) {
-		users[this.uid] = new User(this.uid,this.user);
-		usercnt += 1;
-	}
-	users[this.uid].ways+=1;
-	waycnt+=1;
-	ages.push(Math.round(new Date(this.timestamp).getTime()/1000));
-	for (var i=0; i < this.nodes.length; i++) {
+    /* todo:
+     * average length of road segments
+     * shapes for certain tiger features
+     * turn restrictions
+     */
+     
+    if(OUTPUT_WAYS) {
+        shp.add(this.geom, { id: this.id, name: this.tags.name, version: this.version, timestamp: Math.round(new Date(this.timestamp).getTime()/1000) });
+    }
+    
+    if (doingnodes) {
+        // The before_* callbacks are not called, so we need a workaround.
+        doingnodes = false;
+        doingways = true;
+        tnodes1 = new Date();
+        print('parsing ways...');
+    }
+    var tiger = false;
+    if(!users[this.uid]) {
+        users[this.uid] = new User(this.uid,this.user);
+        usercnt += 1;
+    }
+    users[this.uid].ways+=1;
+    waycnt+=1;
+    ages.push(Math.round(new Date(this.timestamp).getTime()/1000));
+    for (var i=0; i < this.nodes.length; i++) {
        nodes[this.nodes[i]] = 1;
-	}
-	for(var key in this.tags) {
-		waytags+=1;
-		tiger=(key.match(/tiger/ig))
-		if(key.match(/tiger:cfcc/ig)) {
-		    tigerbreakdown[this.tags[key]] = isNaN(tigerbreakdown[this.tags[key]]) ? 1 : tigerbreakdown[this.tags[key]] + 1;
-		}
-	}
-	if(tiger) {
-		tigerways++;
-		if(this.version==1) tiger_untouched++;
-		tigerversionincrease = tigerversionincrease + (this.version - 1 - tigerversionincrease) / tigerways;
-	}
-	avgwayversion = avgwayversion + (this.version - avgwayversion) / waycnt;
+    }
+    for(var key in this.tags) {
+        waytags+=1;
+        tiger=(key.match(/tiger/ig))
+        if(key.match(/tiger:cfcc/ig)) {
+            tigerbreakdown[this.tags[key]] = isNaN(tigerbreakdown[this.tags[key]]) ? 1 : tigerbreakdown[this.tags[key]] + 1;
+        }
+    }
+    if(tiger) {
+        tigerways++;
+        if(this.version==1) tiger_untouched++;
+        tigerversionincrease = tigerversionincrease + (this.version - 1 - tigerversionincrease) / tigerways;
+    }
+    avgwayversion = avgwayversion + (this.version - avgwayversion) / waycnt;
 }
 
 Osmium.Callbacks.relation = function() {
-	if (doingways) {
-		doingways = false;
-		doingrelations = true;
-		tways1 = new Date();
-	}
-	
-	if(!users[this.uid]) {
-		users[this.uid] = new User(this.uid,this.user);
-		usercnt += 1;
-	}
-	users[this.uid].relations+=1;
-	relationcnt+=1;
-	ages.push(Math.round(new Date(this.timestamp).getTime()/1000));
-	for(var tag in this.tags) {
-		relationtags+=1;
-	}
-	avgrelationversion = avgrelationversion + (this.version - avgrelationversion) / relationcnt;
+    if (doingways) {
+         // The before_* callbacks are not called, so we need a workaround.
+        doingways = false;
+        doingrelations = true;
+        tways1 = new Date();
+        print('parsing relations...');
+    }
+
+    if(!users[this.uid]) {
+        users[this.uid] = new User(this.uid,this.user);
+        usercnt += 1;
+    }
+    users[this.uid].relations+=1;
+    relationcnt+=1;
+    ages.push(Math.round(new Date(this.timestamp).getTime()/1000));
+    for(var tag in this.tags) {
+        relationtags+=1;
+    }
+    avgrelationversion = avgrelationversion + (this.version - avgrelationversion) / relationcnt;
 }
 
 Osmium.Callbacks.end = function() {
+    print('output and cleanup...');
+
     // CLEAN UP
     t1 = new Date();
     users.sort(sort_by_totals);
     if(OUTPUT_WAYS) shp.close();
 
     var out = Osmium.Output.CSV.open('userstats.csv');
+    out.print('uid\tusername\tnodes\tways\trelations\tpercentile');
     var cumfeatures = 0;
     var grandtotal = nodecnt + waycnt + relationcnt;
     var realusercnt = 0;
@@ -226,29 +237,24 @@ Osmium.Callbacks.end = function() {
 
     // WRITE USER STATS TO FILE
     for (var i=0;i<users.length;i++) {
-	if(typeof(users[i])=='undefined') continue;
-	realusercnt+=1;
-	cumfeatures += users[i].nodes + users[i].ways + users[i].relations;
-
+        if(typeof(users[i])=='undefined') continue;
+        realusercnt+=1;
+        cumfeatures += users[i].nodes + users[i].ways + users[i].relations;
         out.print(users[i].uid, users[i].name, users[i].nodes, users[i].ways, users[i].relations, cumfeatures / grandtotal );
-	
-	if (cumfeatures / grandtotal > user_thresholds[user_threshold_met]) {
-	    users_for_threshold.push(i+1);
-	    print('threshold ' + user_thresholds[user_threshold_met] + ' at ' + (i+1) + ' users.'); 
-	    user_threshold_met +=1;
-	}
+        if (cumfeatures / grandtotal > user_thresholds[user_threshold_met]) {
+            users_for_threshold.push(i+1);
+            user_threshold_met +=1;
+        }
     }
+    
     for(var i=0;i<user_thresholds.length;i++) {
-	userperc_for_threshold.push((users_for_threshold[i])/realusercnt);
+        userperc_for_threshold.push((users_for_threshold[i])/realusercnt);
     }
+    
     out.close();
     
     // WRITE BASE STATS
     var out2 = Osmium.Output.CSV.open('metrostats.csv');
-    out2.print('contribution thresholds',user_thresholds);
-    out2.print('users',users_for_threshold);
-    out2.print('percentage',userperc_for_threshold);
-    out2.print('===============================================');
     
     // Data temperature calculations
     var percentiles = calculate_percentiles(ages);
@@ -258,27 +264,36 @@ Osmium.Callbacks.end = function() {
     var datatemp_percentile3M = 0.5 * percentiles[2];
     var datatemp_percentile1Y = 0.4 * percentiles[4];
     var datatemp = datatemp_user95 + datatemp_untouchedtiger + datatemp_tigerversionincrease + datatemp_percentile3M + datatemp_percentile1Y;
+
+    print('total nodes / ways / relations: ' + nodecnt + ' / ' + waycnt + ' / ' + relationcnt);
     
-    out2.print('data temperature', datatemp);
     out2.print('total nodes',nodecnt)
     out2.print('total ways',waycnt)
     out2.print('total relations',relationcnt)
+    out2.print('===============================================');
     out2.print('avg tags per node',nodetags/nodecnt)
     out2.print('avg tags per way',waytags/waycnt)
     out2.print('avg tags per relation',relationtags/relationcnt)
-    out2.print('avg node version',avgnodeversion)
-    out2.print('avg way version',avgwayversion)
-    out2.print('avg relation version',avgrelationversion)
-    
-    
-    print('total nodes / ways / relations: ' + nodecnt + ' / ' + waycnt + ' / ' + relationcnt);
 
     // CALCULATE NODES IN WAYS.
     var nodeinwaycnt = 0;
     for(n in nodes) {
-	    if (nodes[n]==0) nodeinwaycnt+=1;
+        if (nodes[n]==0) nodeinwaycnt+=1;
     }
+
     out2.print('pct nodes not in way',nodeinwaycnt / nodecnt)
+    out2.print('===============================================');
+    out2.print('avg node version',avgnodeversion)
+    out2.print('avg way version',avgwayversion)
+    out2.print('avg relation version',avgrelationversion)
+    out2.print('===============================================');
+    out2.print('contribution thresholds',user_thresholds);
+    out2.print('users',users_for_threshold);
+    out2.print('percentage',userperc_for_threshold);
+    out2.print('===============================================');
+    out2.print('data temperature', datatemp);
+    out2.print('===============================================');
+    
 
     // OUTPUT TIGER STATS
     out2.print('amt non-tiger ways',tigerways)
@@ -286,14 +301,16 @@ Osmium.Callbacks.end = function() {
     out2.print('amt untouched tiger',tiger_untouched)
     out2.print('pct untouched tiger',tiger_untouched / tigerways)
     out2.print('avg increase over TIGER',tigerversionincrease)
+    out2.print('===============================================');
 
     // OUTPUT RICH NODE STATS
     out2.print('poi nodes',poicnt)
     out2.print('transport nodes',transportcnt)
     out2.print('named cnt',namecnt)
+    out2.print('===============================================');
     
     // OUTPUT OBJECT AGE AVERAGE AND PERCENTILES
-    out.print('age cohort thresholds',thresholds);
+    out2.print('age cohort thresholds',thresholds);
     out2.print('age cohorts',percentiles);
 
     // TIGER breakdown
@@ -301,11 +318,12 @@ Osmium.Callbacks.end = function() {
     out2.print('TIGER BREAKDOWN');
     out2.print('=======================================================');
     for (key in tigerbreakdown) {
-	out2.print(key,tigerbreakdown[key]);
+        out2.print(key,tigerbreakdown[key]);
     };
+    
+    out2.close();
     
     // OUTPUT TIMINGS
     var tnodes=tnodes1-tnodes0;tways=tways1-tnodes1;trelations=t1-tways1;
     print('finished -- took ' + (t1-t0) + ' ms: nodes / ways / relations / other : ' + tnodes + ' / ' + tways + ' / ' + trelations + ' / ' + ((t1-t0)-(tnodes+tways+trelations)));
-
 }
