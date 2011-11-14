@@ -29,10 +29,12 @@ The output on screen will look something like this:
 
 The script will generate a number of output files:
 
-- ways.* : A shapefile containing all way geometries with version and
-timestamp attributes. 
-- metrostats.csv : The data metrics. 
-- userstats.csv : User statistics.
+- `ways.*` : A shapefile containing all way geometries with `version` and
+`timestamp` attributes. 
+- `metrostats.csv` : The data metrics. 
+- `userstats.csv` : User statistics.
+
+Sample metrostats.csv and userstats.csv files are included in the `example-output` directory
 
 Notes
 =====
