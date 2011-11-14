@@ -70,10 +70,11 @@ var OUTPUT_WAYS = true;
 // Here you can optionally set a directory for the output. If not set,
 // the output will be written to your current working directory.
 // Should end with a trailing slash.
-var OUT_DIR = '/tmp/';
+var OUT_DIR = '';
 
 // These are the thresholds for the age distribution
 // Defaults are 30 days, 90 days, 180 days, 365 days, 730 days
+var day = 60*60*24; // Don't touch this. It's just a convenience var. 
 var thresholds = [30*day, 90*day, 180*day, 365*day, 2*365*day]; 
 
 // These are the keys that are considered when counting rich nodes
@@ -101,7 +102,6 @@ var ranking = {nodes:1,ways:3,relations:9};
 var avgage = 0, avgnodeversion = 0, avgwayversion = 0, avgrelationversion = 0;
 var tigerways = 0; var tiger_untouched=0;var tigerversionincrease = 0;
 var t0,t1,tnodes0,tnodes1,tnodes,tways0,tways1,tways,trelations0,trelations1,trelations;
-var day = 60*60*24;
 
 function User(uid,name) {
     this.uid=uid;
@@ -246,7 +246,6 @@ Osmium.Callbacks.relation = function() {
         relationtags+=1;
         if (key.match(/type/i)) {
             relation_types[this.tags[key]] = isNaN(relation_types[this.tags[key]]) ? 1 : relation_types[this.tags[key]] + 1; 
-            print('relation of type ' + this.tags[key] + ' added, now ' + relation_types[this.tags[key]]);
         }
     }
     avgrelationversion = avgrelationversion + (this.version - avgrelationversion) / relationcnt;
@@ -305,7 +304,7 @@ Osmium.Callbacks.end = function() {
     out2.print('total nodes',nodecnt)
     out2.print('total ways',waycnt)
     out2.print('total relations',relationcnt)
-    out2.print('===============================================');
+
     out2.print('avg tags per node',nodetags/nodecnt)
     out2.print('avg tags per way',waytags/waycnt)
     out2.print('avg tags per relation',relationtags/relationcnt)
@@ -317,17 +316,17 @@ Osmium.Callbacks.end = function() {
     }
 
     out2.print('pct nodes not in way',nodeinwaycnt / nodecnt)
-    out2.print('===============================================');
+
     out2.print('avg node version',avgnodeversion)
     out2.print('avg way version',avgwayversion)
     out2.print('avg relation version',avgrelationversion)
-    out2.print('===============================================');
+
     out2.print('contribution thresholds',user_thresholds);
     out2.print('users',users_for_threshold);
     out2.print('percentage',userperc_for_threshold);
-    out2.print('===============================================');
+
     out2.print('data temperature', datatemp);
-    out2.print('===============================================');
+
     
 
     // OUTPUT TIGER STATS
@@ -336,13 +335,13 @@ Osmium.Callbacks.end = function() {
     out2.print('amt untouched tiger',tiger_untouched)
     out2.print('pct untouched tiger',tiger_untouched / tigerways)
     out2.print('avg increase over TIGER',tigerversionincrease)
-    out2.print('===============================================');
+
 
     // OUTPUT RICH NODE STATS
     out2.print('poi nodes',poicnt)
     out2.print('transport nodes',transportcnt)
     out2.print('named cnt',namecnt)
-    out2.print('===============================================');
+
     
     // OUTPUT OBJECT AGE AVERAGE AND PERCENTILES
     out2.print('age cohort thresholds',thresholds);
