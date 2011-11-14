@@ -67,6 +67,11 @@
 // don't forget you will need to set the -l parameter when running.
 var OUTPUT_WAYS = true;
 
+// Here you can optionally set a directory for the output. If not set,
+// the output will be written to your current working directory.
+// Should end with a trailing slash.
+var OUT_DIR = '/tmp/';
+
 // These are the thresholds for the age distribution
 // Defaults are 30 days, 90 days, 180 days, 365 days, 730 days
 var thresholds = [30*day, 90*day, 180*day, 365*day, 2*365*day]; 
@@ -87,7 +92,8 @@ var shp;
 var users = [];
 var nodes = {};
 var ages = [];
-var tigerbreakdown={};
+var tigerbreakdown = {};
+var relation_types = {};
 var doingnodes = false, doingways = false, doingrelations = false;
 var nodecnt = 0, poicnt = 0, transportcnt = 0, namecnt = 0, waycnt = 0,relationcnt = 0, usercnt = 0;
 var nodetags = 0, waytags = 0, relationtags = 0;
@@ -141,7 +147,7 @@ Osmium.Callbacks.init = function() {
     print('Running...');
     t0 = new Date();
     if(OUTPUT_WAYS) {
-        shp = Osmium.Output.Shapefile.open('ways', 'line');
+        shp = Osmium.Output.Shapefile.open(OUT_DIR + 'ways', 'line');
         shp.add_field('id', 'integer', 10);
         shp.add_field('name', 'string', 40);
         shp.add_field('version','integer',5);
@@ -236,8 +242,12 @@ Osmium.Callbacks.relation = function() {
     users[this.uid].relations+=1;
     relationcnt+=1;
     ages.push(Math.round(new Date(this.timestamp).getTime()/1000));
-    for(var tag in this.tags) {
+    for(var key in this.tags) {
         relationtags+=1;
+        if (key.match(/type/i)) {
+            relation_types[this.tags[key]] = isNaN(relation_types[this.tags[key]]) ? 1 : relation_types[this.tags[key]] + 1; 
+            print('relation of type ' + this.tags[key] + ' added, now ' + relation_types[this.tags[key]]);
+        }
     }
     avgrelationversion = avgrelationversion + (this.version - avgrelationversion) / relationcnt;
 }
@@ -250,7 +260,7 @@ Osmium.Callbacks.end = function() {
     users.sort(sort_by_totals);
     if(OUTPUT_WAYS) shp.close();
 
-    var out = Osmium.Output.CSV.open('userstats.csv');
+    var out = Osmium.Output.CSV.open(OUT_DIR + 'userstats.csv');
     out.print('uid\tusername\tnodes\tways\trelations\tpercentile');
     var cumfeatures = 0;
     var grandtotal = nodecnt + waycnt + relationcnt;
@@ -279,7 +289,7 @@ Osmium.Callbacks.end = function() {
     out.close();
     
     // WRITE BASE STATS
-    var out2 = Osmium.Output.CSV.open('metrostats.csv');
+    var out2 = Osmium.Output.CSV.open(OUT_DIR + 'metrostats.csv');
     
     // Data temperature calculations
     var percentiles = calculate_percentiles(ages);
@@ -346,6 +356,14 @@ Osmium.Callbacks.end = function() {
         out2.print(key,tigerbreakdown[key]);
     };
     
+    // Relation types breakdown
+    out2.print('=======================================================');
+    out2.print('RELATION TYPES BREAKDOWN');
+    out2.print('=======================================================');
+    for (key in relation_types) {
+        out2.print(key,relation_types[key]);
+    };
+
     out2.close();
     
     // OUTPUT TIMINGS
