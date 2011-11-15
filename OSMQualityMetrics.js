@@ -289,6 +289,8 @@ Osmium.Callbacks.end = function() {
     
     // WRITE BASE STATS
     var out2 = Osmium.Output.CSV.open(OUT_DIR + 'metrostats.csv');
+    var out_tiger = Osmium.Output.CSV.open(OUT_DIR + 'tiger.csv');
+    var out_relations = Osmium.Output.CSV.open(OUT_DIR + 'relations.csv');
     
     // Data temperature calculations
     var percentiles = calculate_percentiles(ages);
@@ -297,14 +299,14 @@ Osmium.Callbacks.end = function() {
     var datatemp_tigerversionincrease = 5 * tigerversionincrease;
     var datatemp_percentile3M = 0.5 * percentiles[2];
     var datatemp_percentile1Y = 0.4 * percentiles[4];
-    var datatemp = datatemp_user95 + datatemp_untouchedtiger + datatemp_tigerversionincrease + datatemp_percentile3M + datatemp_percentile1Y;
+    var datatemp = datatemp_user95 + datatemp_untouchedtiger + datatemp_tigerversionincrease + datatemp_percentile3M + datatemp_percentile1Y + 20;
 
     print('total nodes / ways / relations: ' + nodecnt + ' / ' + waycnt + ' / ' + relationcnt);
     
     out2.print('total nodes',nodecnt)
     out2.print('total ways',waycnt)
     out2.print('total relations',relationcnt)
-
+    out2.print('total users',realusercnt)
     out2.print('avg tags per node',nodetags/nodecnt)
     out2.print('avg tags per way',waytags/waycnt)
     out2.print('avg tags per relation',relationtags/relationcnt)
@@ -348,22 +350,18 @@ Osmium.Callbacks.end = function() {
     out2.print('age cohorts',percentiles);
 
     // TIGER breakdown
-    out2.print('=======================================================');
-    out2.print('TIGER BREAKDOWN');
-    out2.print('=======================================================');
     for (key in tigerbreakdown) {
-        out2.print(key,tigerbreakdown[key]);
+        out_tiger.print(key,tigerbreakdown[key]);
     };
     
     // Relation types breakdown
-    out2.print('=======================================================');
-    out2.print('RELATION TYPES BREAKDOWN');
-    out2.print('=======================================================');
     for (key in relation_types) {
-        out2.print(key,relation_types[key]);
+        out_relations.print(key,relation_types[key]);
     };
 
     out2.close();
+    out_tiger.close();
+    out_relations.close();
     
     // OUTPUT TIMINGS
     var tnodes=tnodes1-tnodes0;tways=tways1-tnodes1;trelations=t1-tways1;

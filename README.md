@@ -32,9 +32,11 @@ The script will generate a number of output files:
 - `ways.*` : A shapefile containing all way geometries with `version` and
 `timestamp` attributes. 
 - `metrostats.csv` : The data metrics. 
-- `userstats.csv` : User statistics.
+- `tiger.csv` : Breakdown of TIGER CFCC classes
+- `relations.csv` : Breakdown of relation types
+- `userstats.csv` : User breakdown
 
-Sample metrostats.csv and userstats.csv files are included in the `example-output` directory
+Sample output files are included in the `example-output` directory
 
 Notes
 =====
