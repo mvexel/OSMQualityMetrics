@@ -82,6 +82,11 @@ var poikeys = {leisure:1,amenity:1,office:1,shop:1,craft:1,tourism:1,historic:1}
 var transportkeys = {highway:1,barrier:1,cycleway:1,tracktype:1,waterway:1,railway:1,aeroway:1,aerialway:1,public_transport:1,power:1}
 var namekeys = {name:1,ref:1,place:1,addr:1}
 
+// This is the reference date from which the age statistics are
+// calculated. The date should coincide with the timestamp of the
+// OSM file you are analyzing.
+var REF_DATE = new Date("October 19, 2011 00:00:00");
+
 /*
  * You should only modify the code below this line if you're familiar 
  * with JavaScript and OSMJS
@@ -99,7 +104,7 @@ var doingnodes = false, doingways = false, doingrelations = false;
 var nodecnt = 0, poicnt = 0, transportcnt = 0, namecnt = 0, waycnt = 0,relationcnt = 0, usercnt = 0;
 var nodetags = 0, waytags = 0, relationtags = 0;
 var ranking = {nodes:1,ways:3,relations:9};
-var avgage = 0, avgnodeversion = 0, avgwayversion = 0, avgrelationversion = 0;
+var avgnodeversion = 0, avgwayversion = 0, avgrelationversion = 0;
 var tigerways = 0; var tiger_untouched=0;var tigerversionincrease = 0;
 var t0,t1,tnodes0,tnodes1,tnodes,tways0,tways1,tways,trelations0,trelations1,trelations;
 
@@ -115,7 +120,7 @@ User.prototype.rank = function(){return this.nodes*ranking.nodes + this.ways*ran
 
 function calculate_percentiles(ary) {
     var cohorts = [0,0,0,0,0,0];
-    var now = Math.round(new Date().getTime()/1000);
+    var now = Math.round(REF_DATE.getTime()/1000);
     for(var i=0;i<ary.length;i+=1) {
         var t = ary[i];
         var cohorted = false;
@@ -176,10 +181,8 @@ Osmium.Callbacks.node = function() {
     }
     nodecnt+=1;
     nodes[this.id] = 0;
-    avgage = avgage + (Math.round(new Date(this.timestamp).getTime()/1000) - avgage) / nodecnt;
     ages.push(Math.round(new Date(this.timestamp).getTime()/1000));
     avgnodeversion = avgnodeversion + (this.version - avgnodeversion) / nodecnt;
-    
 }
 
 Osmium.Callbacks.way = function() {
