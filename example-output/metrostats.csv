@@ -1,0 +1,25 @@
+total nodes	51777
+total ways	5040
+total relations	28
+total users	41
+avg tags per node	0.09996716688877301
+avg tags per way	11.487896825396826
+avg tags per relation	11.892857142857142
+pct nodes not in way	0.012862854163045367
+avg node version	1.9600208586824095
+avg way version	1.4228174603174635
+avg relation version	22.178571428571427
+contribution thresholds	0.9,0.95,0.99
+users	5,7,14
+percentage	0.12195121951219512,0.17073170731707318,0.34146341463414637
+data temperature	18.704580063167455
+amt non-tiger ways	4618
+pct non-tiger ways	0.9162698412698412
+amt untouched tiger	3797
+pct untouched tiger	0.8222174101342573
+avg increase over TIGER	0.3878302295365956
+poi nodes	571
+transport nodes	258
+named cnt	669
+age cohort thresholds	2592000,7776000,15552000,31536000,63072000
+age cohorts	0.5,0.1,1.1,7.5,39.4,51.4
