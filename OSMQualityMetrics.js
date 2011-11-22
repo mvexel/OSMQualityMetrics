@@ -101,7 +101,7 @@ var nodetags = 0, waytags = 0, relationtags = 0;
 var ranking = {nodes:1,ways:3,relations:9};
 var avgage = 0, avgnodeversion = 0, avgwayversion = 0, avgrelationversion = 0;
 var tigerways = 0; var tiger_untouched=0;var tigerversionincrease = 0;
-var t0,t1,tnodes0,tnodes1,tnodes,tways0,tways1,tways,trelations0,trelations1,trelations;
+var t0, t1, tnodes0, tnodes1, tways1, trelations1;
 
 function User(uid,name) {
     this.uid=uid;
@@ -255,7 +255,7 @@ Osmium.Callbacks.end = function() {
     print('output and cleanup...');
 
     // CLEAN UP
-    t1 = new Date();
+    trelations1 = new Date();
     users.sort(sort_by_totals);
     if(OUTPUT_WAYS) shp.close();
 
@@ -364,6 +364,7 @@ Osmium.Callbacks.end = function() {
     out_relations.close();
     
     // OUTPUT TIMINGS
-    var tnodes=tnodes1-tnodes0;tways=tways1-tnodes1;trelations=t1-tways1;
-    print('finished -- took ' + (t1-t0) + ' ms: nodes / ways / relations / other : ' + tnodes + ' / ' + tways + ' / ' + trelations + ' / ' + ((t1-t0)-(tnodes+tways+trelations)));
+    t1 = new Date();
+    var tnodes=tnodes1-tnodes0;tways=tways1-tnodes1;trelations=trelations1-tways1;
+    print('finished!\nTimings:\ntotal: ' + (t1-t0) + ' ms\n---------------------\nnodes: ' + tnodes + 'ms\nways: ' + tways + 'ms\nrelations: ' + trelations + 'ms\noverhead: ' + ((t1-t0)-(tnodes+tways+trelations)) + 'ms');
 }

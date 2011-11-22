@@ -26,11 +26,17 @@ The output on screen will look something like this:
         parsing ways...
         parsing relations...
         output and cleanup...
-        total nodes / ways / relations: 418356 / 58727 / 358
-        finished -- took 15922 ms: nodes / ways / relations / other : 9007 / 6877 / 15 / 23
+        total nodes / ways / relations: 51777 / 5040 / 28
+        finished!
+        Timings:
+        total: 5002 ms
+        ---------------------
+        nodes: 4270ms
+        ways: 617ms
+        relations: 3ms
+        overhead: 112ms
 
-
-The script will generate output in the OUT_DIR specified in the script file.
+The scripts will generate output in the OUT_DIR specified in the script file.
 
 For OSMQualityMetrics.js the output will be:
 - `ways.*` : A shapefile containing all way geometries with `version` and
@@ -41,7 +47,7 @@ For OSMQualityMetrics.js the output will be:
 - `userstats.csv` : User breakdown
 
 For UserStats.js the output will be: 
-- `userstats.csv` : User breakdown
+- `userstats.csv` : Historical user breakdown
 
 Sample output files are included in the `example-output` directory
 
@@ -53,8 +59,8 @@ parameter when running the script and speed things up.
 - The -l array script is best for large OSM files. If you're working
 with smaller, city-sized OSM data files. run OSMJS with the -h option 
 for more info. 
-- The script will save its output files in the current working
-directory.
+- The scripts will save its output files in the current working
+directory if no OUT_DIR is specified.
 
 Timings
 =======
