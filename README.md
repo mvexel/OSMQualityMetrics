@@ -1,7 +1,10 @@
-OSMQualityMetrics.js
-====================
-This is an OSMJS script that generates general statistics as well as 
-quality metrics for any OSM file you throw at it.
+Quality Metrics Suite
+=====================
+This is a growing set of OSMJS scripts that allow you to calculate quality
+matrics on OSM data. Currently it consists of:
+- OSMQualityMetrics.js - various quality metrics, for normal OSM files
+- UserStats.js - historical user metrics, for full history OSM files
+The UserStats 
 
 Setup
 =====
@@ -12,7 +15,7 @@ instructions at https://github.com/joto/osmium/tree/master/osmjs
 
 Running the script
 ==================
-With OSMJS compiled, run the script:
+With OSMJS compiled, run one of the scripts:
 
         /path/to/osmjs -j OSMQualityMetrics.js -l array /path/to/data.osm
 
@@ -27,13 +30,17 @@ The output on screen will look something like this:
         finished -- took 15922 ms: nodes / ways / relations / other : 9007 / 6877 / 15 / 23
 
 
-The script will generate a number of output files:
+The script will generate output in the OUT_DIR specified in the script file.
 
+For OSMQualityMetrics.js the output will be:
 - `ways.*` : A shapefile containing all way geometries with `version` and
 `timestamp` attributes. 
 - `metrostats.csv` : The data metrics. 
 - `tiger.csv` : Breakdown of TIGER CFCC classes
 - `relations.csv` : Breakdown of relation types
+- `userstats.csv` : User breakdown
+
+For UserStats.js the output will be: 
 - `userstats.csv` : User breakdown
 
 Sample output files are included in the `example-output` directory
@@ -51,7 +58,7 @@ directory.
 
 Timings
 =======
-On a Intel® Core™ i5-2410M CPU @ 2.30GHzx4 machine with 8GB of RAM
+OSMQualityMetrics.js: On a Intel® Core™ i5-2410M CPU @ 2.30GHzx4 machine with 8GB of RAM
 running Ubuntu Oneiric, a 55MB bz2-compressed OSM XML file takes 103
 seconds to process without way shapefile output. With way shapefile 
 output using the sparsetable storage, the same file took 133 seconds to
@@ -73,4 +80,4 @@ Easy
 
 Harder
 ------
-* Work with full history files
+* More metrics on full history files
