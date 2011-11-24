@@ -3,7 +3,7 @@
  * ====================
  */
 
-var OUT_DIR = '/home/mvexel/osm/tmp';
+var OUT_DIR = '/osm/tmp';
 
 var day = 1000* 60*60*24; 
 var doingnodes = false, doingways = false, doingrelations = false;
