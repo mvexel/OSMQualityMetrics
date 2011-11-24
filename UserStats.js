@@ -141,25 +141,29 @@ Date.prototype.format = function (mask, utc) {
     return dateFormat(this, mask, utc);
 };
 
-function User(uid,name) 
-{
-    this.uid=uid;
-    this.name=name;
-    this.nodes=0;
-    this.currentnodes = 0;
-    this.ways=0;
-    this.currentways = 0;
-    this.relations=0;
-    this.currentrelations = 0;
-    this.firstObj = new Date();
-    this.lastObj = new Date(1970,1,1);
-}
 
 /* 
  * ====================
  * End date format code
  * ====================
  */
+
+function User(uid,name) 
+{
+    this.uid=uid;
+    this.name=name;
+    this.nodes=0;
+    this.nodescreated = 0;
+    this.currentnodes = 0;
+    this.ways=0;
+    this.wayscreated = 0;
+    this.currentways = 0;
+    this.relations=0;
+    this.relationscreated = 0;
+    this.currentrelations = 0;
+    this.firstObj = new Date();
+    this.lastObj = new Date(1970,1,1);
+}
  
 function cloneFeature(n) 
 {
@@ -217,18 +221,21 @@ function processlastfeature(n)
     {
         nodecnt++;
         users[pf.uid].nodes++;
+        if (pf.version == 1) users[pf.uid].nodescreated++
         if (nodecnt % interval == 0) print(nodecnt + '...');
     }
     else if (doingways) 
     {
         waycnt++;
         users[pf.uid].ways++;
+        if (pf.version == 1) users[pf.uid].wayscreated++
         if (waycnt % interval == 0) print(waycnt + '...');
     }
     else 
     {
         relationcnt++;
         users[pf.uid].relations++;
+        if (pf.version == 1) users[pf.uid].relationscreated++
         if (relationcnt % interval == 0) print(relationcnt + '...');
     }
 }
@@ -306,7 +313,7 @@ Osmium.Callbacks.end = function()
     var out = Osmium.Output.CSV.open(OUT_DIR + '/userstats.csv');
 
     // Print headers
-    out.print('uid\tusername\tnodes\tcur nodes\tways\tcur ways\trelations\tcur rels\tfirst\tlast\tdays active\ttotal edits\tcurrent objects\tavg edits/day\tpersistence');
+    out.print('uid\tusername\tnodes\tnodes_created\tcur nodes\tways\tways_created\tcur ways\trelations\trelations_created\tcur rels\tfirst\tlast\tdays active\ttotal edits\tcurrent objects\tavg edits/day\tpersistence');
 
     // Caluculate metrics for each user
     for (var i=0;i<users.length;i++)
@@ -323,7 +330,7 @@ Osmium.Callbacks.end = function()
         var currentObjects = u.currentnodes + u.currentways + u.currentrelations;
         var avgEditsPerDay = totalEdits / daysActive;
         var persistence = currentObjects / totalEdits;
-        out.print(u.uid, u.name, u.nodes, u.currentnodes, u.ways, u.currentways, u.relations, u.currentrelations,dFirstFormatted ,dLastFormatted , daysActive ,totalEdits , currentObjects, avgEditsPerDay, persistence);
+        out.print(u.uid, u.name, u.nodes, u.nodescreated, u.currentnodes, u.ways, u.wayscreated, u.currentways, u.relations, u.relationscreated, u.currentrelations,dFirstFormatted ,dLastFormatted , daysActive ,totalEdits , currentObjects, avgEditsPerDay, persistence);
     }
 
     out.close();
