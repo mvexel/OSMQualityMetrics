@@ -62,7 +62,7 @@ var OUT_DIR = '';
 var known_bots = ['woodpeck_fixbot','nhd-import','TIGERcnl', 'DaveHansenTiger'];
 
 // Highway values that are not part of the navigable road network
-var navigablehighwaytags = ['motorway','motorway_link','trunk','trunk_link','primary','primary_link','secondary','secondary_link','tertiary','residential','unclassified','living_street','road','service'];
+var navigablehighwayvalues = ['motorway','motorway_link','trunk','trunk_link','primary','primary_link','secondary','secondary_link','tertiary','residential','unclassified','living_street','road','service'];
 
 /*
  * You should only modify the code below this line if you're familiar 
@@ -116,9 +116,9 @@ Osmium.Callbacks.way = function() {
         print('parsing ways...');
     }
 
+    var highway = 0;
     var tiger = 0;
     var navigable = 0;
-    var highway = 0;
 
     if(!users[this.uid]) {
         users[this.uid] = new User(this.uid,this.user);
@@ -129,9 +129,9 @@ Osmium.Callbacks.way = function() {
     ways++;
 
     for(var key in this.tags) {
-        highway += (key.match(/highway/ig)) ? 1:0;
+        highway += (key == 'highway') ? 1:0;
         tiger += (key.match(/tiger/ig)) ? 1:0;
-        navigable += (key == 'highway' && navigablehighwaytags.indexOf(this.tags[key]) > -1) ? 1:0;
+        navigable += (key == 'highway' && navigablehighwayvalues.indexOf(this.tags[key]) > -1) ? 1:0;
     }
    
     if(highway>0) {
@@ -147,6 +147,7 @@ Osmium.Callbacks.way = function() {
     }
     
     if (navigable>0) {
+        print('navigable val: ' + navigable)
         navigablehighways++;
         users[this.uid].navigablehighways++;
     }
@@ -210,6 +211,8 @@ Osmium.Callbacks.end = function() {
     outhighways.print('total users involved in ways',realusercnt)
     outhighways.print('amt highways',highways);
     outhighways.print('pct highways', highways/ways);
+    outhighways.print('amt navigable highways',navigablehighways);
+    outhighways.print('pct navigable highways', navigablehighways/highways);
     outhighways.print('amt tiger ways',tigerways);
     outhighways.print('pct tiger ways',tigerways/ways);
     outhighways.print('amt untouched tiger',tigeruntouchedways);
