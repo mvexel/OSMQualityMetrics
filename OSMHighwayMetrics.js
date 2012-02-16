@@ -13,11 +13,11 @@
  * Running the script
  * ==================
  * With OSMJS compiled, run the script:
- * /path/to/osmjs -j OSMHighwayMetrics.js /path/to/data.osm
+ * /path/to/osmjs -j OSMHighwayMetrics.js /path/to/data.osm [prefix]
  * 
  * The script will generate one output file:
- * - highwaystats.csv : Highway statistics.
- * - userstats.csv : users involved with the highways.
+ * - [prefix_]highwaystats.csv : Highway statistics.
+ * - [prefix_]userstats.csv : users involved with the highways.
  * 
  * Notes
  * =====
@@ -78,6 +78,10 @@ var nodes = 0, ways = 0,relations = 0;
 var ways = 0, highways = 0, navigablehighways = 0, tigerways = 0;
 var tigeruntouchedways = 0, tigerversionincrease = 0;
 var t0, t1, tnodes0, tnodes1, tways1, trelations1;
+
+// Get the outpuf file prefix from the command line argument.
+outprefix = argv.length == 1 ? argv[0] + "_" : "";
+print(outprefix);
 
 function User(uid,name) {
     this.uid=uid;
@@ -147,7 +151,6 @@ Osmium.Callbacks.way = function() {
     }
     
     if (navigable>0) {
-        print('navigable val: ' + navigable)
         navigablehighways++;
         users[this.uid].navigablehighways++;
     }
@@ -172,7 +175,7 @@ Osmium.Callbacks.end = function() {
     trelations1 = new Date();
     users.sort(sort_by_tigerways);
 
-    var outuserstats = Osmium.Output.CSV.open(OUT_DIR + 'userstats.csv');
+    var outuserstats = Osmium.Output.CSV.open(OUT_DIR + outprefix +  'userstats.csv');
     outuserstats.print('#\tuid\tusername\tways\thighways\ttigerways\tnavigablehighways\tprecentile');
     var cumulativetiger = 0;
     var grandtotal = nodes + ways + relations;
@@ -203,7 +206,7 @@ Osmium.Callbacks.end = function() {
     outuserstats.close();
     
     // WRITE BASE STATS
-    var outhighways = Osmium.Output.CSV.open(OUT_DIR + 'highwaystats.csv');
+    var outhighways = Osmium.Output.CSV.open(OUT_DIR + outprefix + 'highwaystats.csv');
     
     outhighways.print('total nodes',nodes)
     outhighways.print('total ways',ways)
