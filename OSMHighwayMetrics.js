@@ -59,7 +59,7 @@
 var OUT_DIR = '';
 
 // Known bots -- these will not be taken into account for the userstats
-var known_bots = ['woodpeck_fixbot','nhd-import','TIGERcnl', 'DaveHansenTiger'];
+var known_bots = ['woodpeck_fixbot', 'balrog-kun', 'nhd-import', 'TIGERcnl', 'DaveHansenTiger'];
 
 // Highway values that are not part of the navigable road network
 var navigablehighwayvalues = ['motorway','motorway_link','trunk','trunk_link','primary','primary_link','secondary','secondary_link','tertiary','residential','unclassified','living_street','road','service'];
