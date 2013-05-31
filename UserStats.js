@@ -3,7 +3,7 @@
  * ====================
  */
 
-var OUT_DIR = '/osm/tmp';
+var OUT_DIR = '/mnt/osm/out';
 
 var day = 1000* 60*60*24; 
 var doingnodes = false, doingways = false, doingrelations = false;
@@ -182,9 +182,15 @@ function sort_by_totals(a,b)
     return ((a.nodes + a.ways + a.relations) < (b.nodes + b.ways + b.relations) ? 1 : (a.nodes + a.ways + a.relations) > (b.nodes + b.ways + b.relations) ? -1 : 0);
 }
 
-function processlastfeature(n) 
+function processlastfeature(cf) 
 {
-    iscurrent = (pf.id != n.id); 
+    // this relies on the file being sorted by id and version, is this the case?
+    //if (doingways) {
+    //    print("way id/version: " + pf.id + "/" + pf.version); 
+    //}
+    // seems to hold...
+
+    iscurrent = (pf.id != cf.id); 
     
     if(!users[pf.uid]) 
     {
@@ -200,6 +206,7 @@ function processlastfeature(n)
     
     if (iscurrent)
     {
+    //    print('current!!');
         if (doingnodes) 
         {
             currentnodecnt++;
