@@ -4,7 +4,6 @@ This is a growing set of OSMJS scripts that allow you to calculate quality
 matrics on OSM data. Currently it consists of:
 - OSMQualityMetrics.js - various quality metrics, for normal OSM files
 - UserStats.js - historical user metrics, for full history OSM files
-The UserStats 
 
 Setup
 =====
@@ -18,6 +17,9 @@ Running the script
 With OSMJS compiled, run one of the scripts:
 
         /path/to/osmjs -j OSMQualityMetrics.js -l array /path/to/data.osm
+
+
+(It works equally well - perhaps even better - with a PBF input file, if you have PBF support in osmium)
 
 The output on screen will look something like this:
 
@@ -56,8 +58,8 @@ Notes
 - if you don't need the ways shapefile, you can set the OUTPUT_WAYS
 variable to false in the script. You can then also leave out the -l 
 parameter when running the script and speed things up. 
-- The -l array script is best for large OSM files. If you're working
-with smaller, city-sized OSM data files. run OSMJS with the -h option 
+- The `-l array` option is best for large OSM files. If you're working
+with smaller, city-sized OSM data files, use `-l sparsetable`. Run `osmjs -h`  
 for more info. 
 - The scripts will save its output files in the current working
 directory if no OUT_DIR is specified.

@@ -3,7 +3,7 @@
  * ====================
  */
 
-var OUT_DIR = '/mnt/osm/out';
+var OUT_DIR = '/osm';
 
 var day = 1000* 60*60*24; 
 var doingnodes = false, doingways = false, doingrelations = false;
