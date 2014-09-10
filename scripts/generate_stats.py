@@ -12,6 +12,8 @@ osmjs_path = ""
 
 def usage():
     print """
+A script to generate user stats for a directory full of OSM PBF files - either full history or current PBF.
+
 Usage: generate_stats in_dir out_dir [path_to_osmium]
 
 in_dir contains one or more OSM files (.osm.pbf)
