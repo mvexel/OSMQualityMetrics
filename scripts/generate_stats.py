@@ -28,7 +28,7 @@ if __name__ == '__main__':
     osmjs_path = commands.getoutput("which osmjs")
     if osmjs_path == "":
         if len(sys.argv) == 4:
-            osmjs_path = os.path.join(sys.argv[3], '/osmjs/osmjs')
+            osmjs_path = os.path.join(sys.argv[3], 'osmjs/osmjs')
             if not (os.path.isfile(osmjs_path) and os.access(osmjs_path, os.X_OK)):
                 print "osmjs is not in not at {osmjs_path}".format(osmjs_path=osmjs_path)
                 usage()
