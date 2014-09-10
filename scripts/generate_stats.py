@@ -41,7 +41,7 @@ if __name__ == '__main__':
     for osmfile in files:
         basename = os.path.splitext(os.path.basename(osmfile))[0]
         print "Processing {basename}".format(basename=basename)
-        call([osmjs_path, '-j' '../UserStats.js' '-l' 'array', osmfile])
+        call([osmjs_path, '-j', '../UserStats.js', '-l' 'array', osmfile])
         dest_csv = os.path.join(sys.argv[2], basename + '.csv')
         print "ouputting stats file at {statspath}".format(statspath=dest_csv)
         shutil.move('userstats.csv', dest_csv)
