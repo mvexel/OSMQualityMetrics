@@ -30,7 +30,7 @@ if __name__ == '__main__':
         if len(sys.argv) == 4:
             osmjs_path = os.path.join(sys.argv[3], '/osmjs/osmjs')
             if not (os.path.isfile(osmjs_path) and os.access(osmjs_path, os.X_OK)):
-                print "osmjs is not in not at {osmjs_path}".format(osmjs_path)
+                print "osmjs is not in not at {osmjs_path}".format(osmjs_path=osmjs_path)
                 usage()
         else:
             print "osmjs not in PATH and no path_to_osmium given."
