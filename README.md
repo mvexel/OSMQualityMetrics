@@ -1,3 +1,9 @@
+## Read This First
+
+12/2017: This project is a few years old and I haven't given it any attention. There are probably better tools out there to do quality analysis on OSM data now, especially at scale. Have a look at Mapbox's QA Tiles and some of the work done with them, for example [by Jennings Anderson](https://mapbox.github.io/osm-analysis-collab/). 
+
+If you do find this project useful and are familiar with Osmium and its Javascript bindings, let me know if you want to take it over or become a maintainer!
+
 Quality Metrics Suite
 =====================
 This is a growing set of OSMJS scripts that allow you to calculate quality
