@@ -1,5 +1,7 @@
 ## Read This First
 
+5/2018: The [osm-editing-metrics](https://github.com/mvexel/osm-editing-metrics) is the spiritual successor to this repo. It uses the new osmium and its nodejs bindings for 🚀 performance.
+
 12/2017: This project is a few years old and I haven't given it any attention. There are probably better tools out there to do quality analysis on OSM data now, especially at scale. Have a look at Mapbox's QA Tiles and some of the work done with them, for example [by Jennings Anderson](https://mapbox.github.io/osm-analysis-collab/). 
 
 If you do find this project useful and are familiar with Osmium and its Javascript bindings, let me know if you want to take it over or become a maintainer!
